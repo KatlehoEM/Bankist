@@ -10,6 +10,7 @@ const account1 = {
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+  type: "premium",
 };
 
 const account2 = {
@@ -17,6 +18,7 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+  type: "standard",
 };
 
 const account3 = {
@@ -24,6 +26,7 @@ const account3 = {
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+  type: "premium",
 };
 
 const account4 = {
@@ -31,6 +34,7 @@ const account4 = {
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
+  type: "basic",
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -63,9 +67,12 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Display Movements
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = "";
-  movements.forEach(function (move, i) {
+
+  const movs = sort ? movements.slice().sort((a, b) => b - a) : movements;
+
+  movs.forEach(function (move, i) {
     const type = move > 0 ? `deposit` : `withdrawal`;
     const html = `
       <div class="movements__row">
@@ -186,6 +193,22 @@ btnTransfer.addEventListener("click", function (e) {
   }
 });
 
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((mov) => mov >= amount * 0.1)
+  ) {
+    // Add movement
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+    inputLoanAmount.value = "";
+  }
+});
+
 btnClose.addEventListener("click", function (e) {
   e.preventDefault();
 
@@ -204,6 +227,13 @@ btnClose.addEventListener("click", function (e) {
   }
 
   inputCloseUsername.value = inputClosePin.value = "";
+});
+
+let sorted = false;
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
 
 /////////////////////////////////////////////////
@@ -475,6 +505,8 @@ const calcAverageHumanAge = function (dogsJulia, dogsKate) {
     .reduce((accu, cur, i, arr) => accu + cur / arr.length, 0);
 };
 
+// FIND
+
 // const firstWithdrawal = movements.find((mov) => mov < 0);
 // console.log(movements);
 // console.log(firstWithdrawal);
@@ -491,3 +523,192 @@ const calcAverageHumanAge = function (dogsJulia, dogsKate) {
 //   }
 // }
 // console.log(_account);
+
+// FINDLAST
+
+// console.log(movements);
+// const lastWithdrawal = movements.findLast((mov) => mov < 0 && mov < -130);
+// console.log(lastWithdrawal);
+
+// FINDLASTINDEX
+
+// `You latest large movement was X movements ago`;
+
+// const latestLargeMovementIndex = movements.findLastIndex(
+//   (mov) => Math.abs(mov) > 2000
+// );
+
+// console.log(
+//   `You latest large movement was ${
+//     movements.length - latestLargeMovementIndex
+//   } movements ago`
+// );
+
+// // EQUALITY
+// console.log(movements);
+// console.log(movements.includes(-130));
+
+// // CONDITION
+// const anyDeposits = movements.some((mov) => mov > 1500);
+// console.log(anyDeposits);
+
+// // EVERY
+// console.log(movements.every((mov) => mov > 0));
+// console.log(account4.movements.every((mov) => mov > 0));
+
+// // Separate callback
+// const deposit = (mov) => mov > 0;
+// console.log(movements.some(deposit));
+
+// // FLAT
+// const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+// console.log(arr.flat());
+
+// const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+// console.log(arrDeep.flat(2));
+
+// const accountMovements = accounts.map((acc) => acc.movements);
+// console.log(accountMovements);
+
+// const allMovements = accountMovements.flat();
+// console.log(allMovements);
+// const overallBalance = allMovements.reduce((acc, cur) => acc + cur, 0);
+// console.log(overallBalance);
+
+// const overallBalance = accounts
+//   .map((acc) => acc.movements)
+//   .flat()
+//   .reduce((acc, cur) => acc + cur, 0);
+// console.log(overallBalance);
+
+// // FLATMAP
+
+// const overallBalance2 = accounts
+//   .flatMap((acc) => acc.movements)
+//   .reduce((acc, cur) => acc + cur, 0);
+// console.log(overallBalance2);
+
+///////////////////////////////////////
+// Coding Challenge #4
+
+// This time, Julia and Kate are studying the activity levels of different dog breeds.
+
+// const breeds = [
+//   {
+//     breed: "German Shepherd",
+//     averageWeight: 32,
+//     activities: ["fetch", "swimming"],
+//   },
+//   {
+//     breed: "Dalmatian",
+//     averageWeight: 24,
+//     activities: ["running", "fetch", "agility"],
+//   },
+//   {
+//     breed: "Labrador",
+//     averageWeight: 28,
+//     activities: ["swimming", "fetch"],
+//   },
+//   {
+//     breed: "Beagle",
+//     averageWeight: 12,
+//     activities: ["digging", "fetch"],
+//   },
+//   {
+//     breed: "Husky",
+//     averageWeight: 26,
+//     activities: ["running", "agility", "swimming"],
+//   },
+//   {
+//     breed: "Bulldog",
+//     averageWeight: 36,
+//     activities: ["sleeping"],
+//   },
+//   {
+//     breed: "Poodle",
+//     averageWeight: 18,
+//     activities: ["agility", "fetch"],
+//   },
+// ];
+
+// // YOUR TASKS:
+// // 1. Store the the average weight of a "Husky" in a variable "huskyWeight"
+
+// const huskyWeight = breeds.find((bre) => bre.breed === "Husky").averageWeight;
+// // console.log(huskyWeight);
+
+// // 2. Find the name of the only breed that likes both "running" and "fetch" ("dogBothActivities" variable)
+// const dogBothActivities = breeds.find(
+//   (bre) =>
+//     bre.activities.includes("running") && bre.activities.includes("fetch")
+// ).breed;
+// // console.log(dogBothActivities);
+
+// // 3. Create an array "allActivities" of all the activities of all the dog breeds
+// const allActivities = breeds.flatMap((bre) => bre.activities);
+// console.log(allActivities);
+
+// // 4. Create an array "uniqueActivities" that contains only the unique activities (no activity repetitions).
+// // HINT: Use a technique with a special data structure that we studied a few sections ago.
+
+// const uniqueActivities = [...new Set(breeds.flatMap((bre) => bre.activities))];
+// console.log(uniqueActivities);
+
+// // 5. Many dog breeds like to swim. What other activities do these dogs like?
+// // Store all the OTHER activities these breeds like to do, in a unique array called "swimmingAdjacent".
+
+// const swimmingAdjacent = [
+//   ...new Set(
+//     breeds
+//       .filter((bre) => bre.activities.includes("swimming"))
+//       .flatMap((bre) => bre.activities)
+//   ),
+// ];
+
+// // console.log(swimmingAdjacent);
+
+// const index = swimmingAdjacent.findIndex((act) => act === "swimming");
+// // console.log(index);
+// swimmingAdjacent.splice(index, 1);
+// // console.log(swimmingAdjacent);
+
+// // 6. Do all the breeds have an average weight of 10kg or more? Log to the console whether "true" or "false".
+
+// const everyDog = breeds.every((bre) => bre.averageWeight >= 10);
+// console.log(everyDog);
+
+// // 7. Are there any breeds that are "active"? "Active" means that the dog has 3 or more activities. Log to the console whether "true" or "false".
+
+// const anyDogs = breeds.some((bre) => bre.activities.length >= 3);
+// console.log(anyDogs);
+
+// // BONUS: What's the average weight of the heaviest breed that likes to fetch? HINT: Use the "Math.max" method along with the ... operator.
+
+// const heaviestDog = breeds
+//   .filter((bre) => bre.activities.includes("fetch"))
+//   .map((bre) => bre.averageWeight);
+// console.log(Math.max(...heaviestDog));
+
+// // TEST DATA:
+
+// Array Grouping
+
+console.log(movements);
+const groupedMovements = Object.groupBy(movements, (movements) =>
+  movements > 0 ? "deposits" : "withdrawals"
+);
+console.log(groupedMovements);
+
+const groupedByActivity = Object.groupBy(accounts, (account) => {
+  const movementCount = account.movements.length;
+
+  if (movementCount >= 8) return "very active";
+  if (movementCount >= 4) return "active";
+  if (movementCount >= 1) return "moderate";
+  return "inactive";
+});
+console.log(groupedByActivity);
+
+// const groupedAccounts = Object.groupBy(accounts, (account) => account.type);
+const groupedAccounts = Object.groupBy(accounts, ({ type }) => type);
+console.log(groupedAccounts);
