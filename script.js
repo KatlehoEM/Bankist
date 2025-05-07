@@ -985,3 +985,54 @@ console.log(dogsArr.sort((a, b) => a.recommendedFood - b.recommendedFood));
 // console.log(+(2.7).toFixed(0));
 // console.log((2.7).toFixed(3));
 // console.log((2.7).toFixed(0));
+
+console.log(5 % 2);
+console.log(5 / 2);
+
+const isEven = (n) => n % 2 === 0;
+
+console.log(isEven(8));
+console.log(isEven(23));
+console.log(isEven(212));
+
+// labelBalance.addEventListener("click", function () {
+//   [...document.querySelectorAll(".movements__row")].forEach(function (row, i) {
+//     if (i % 2 === 0) row.style.backgroundColor = "orangered";
+//     if (i % 3 === 0) {
+//       row.style.backgroundColor = "blue";
+//     }
+//   });
+// });
+
+/// Numeric Separators
+
+// 287,460,000,000
+const diameter = 287_460_000_000;
+console.log(diameter);
+
+const price = 345_99;
+console.log(price);
+
+const transferFee1 = 15_00;
+const transferFee2 = 1_500;
+
+const PI = 3.14_15;
+console.log(PI);
+
+console.log(Number("230_000"));
+console.log(parseInt("230_000"));
+
+// Big Int
+
+console.log(2 ** 53 - 1);
+console.log(Number.MAX_SAFE_INTEGER);
+
+console.log(23453255353534534535234534534523535);
+console.log(23453255353534534535234534534523535n);
+console.log(BigInt(23453255353534534535234534534523535));
+
+// Operations
+
+console.log(10000n + 10000n);
+console.log(2342342343242342334234334n * 1000n);
+console.log(2342342343242342334234334n * 120020030000400000n);
