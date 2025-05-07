@@ -1,5 +1,7 @@
 "use strict";
 
+// 983,480 => 5th May 2025
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // BANKIST APP
@@ -7,10 +9,22 @@
 // Data
 const account1 = {
   owner: "Jonas Schmedtmann",
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
   interestRate: 1.2, // %
   pin: 1111,
-  type: "premium",
+
+  movementsDates: [
+    "2019-11-18T21:31:17.178Z",
+    "2019-12-23T07:42:02.383Z",
+    "2020-01-28T09:15:04.904Z",
+    "2020-04-01T10:17:24.185Z",
+    "2020-05-08T14:11:59.604Z",
+    "2020-05-27T17:01:17.194Z",
+    "2020-07-11T23:36:17.929Z",
+    "2020-07-12T10:51:36.790Z",
+  ],
+  currency: "EUR",
+  locale: "pt-PT", // de-DE
 };
 
 const account2 = {
@@ -18,26 +32,22 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
-  type: "standard",
+
+  movementsDates: [
+    "2019-11-01T13:15:33.035Z",
+    "2019-11-30T09:48:16.867Z",
+    "2019-12-25T06:04:23.907Z",
+    "2020-01-25T14:18:46.235Z",
+    "2020-02-05T16:33:06.386Z",
+    "2020-04-10T14:43:26.374Z",
+    "2020-06-25T18:49:59.371Z",
+    "2020-07-26T12:01:20.894Z",
+  ],
+  currency: "USD",
+  locale: "en-US",
 };
 
-const account3 = {
-  owner: "Steven Thomas Williams",
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
-  interestRate: 0.7,
-  pin: 3333,
-  type: "premium",
-};
-
-const account4 = {
-  owner: "Sarah Smith",
-  movements: [430, 1000, 700, 50, 90],
-  interestRate: 1,
-  pin: 4444,
-  type: "basic",
-};
-
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2];
 
 // Elements
 const labelWelcome = document.querySelector(".welcome");
@@ -78,7 +88,7 @@ const displayMovements = function (movements, sort = false) {
       <div class="movements__row">
             <div class="movements__type 
             movements__type--${type}">${i + 1} ${type}</div>
-            <div class="movements__value">${move}€</div>
+            <div class="movements__value">${move.toFixed(2)}€</div>
       </div>`;
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
@@ -89,7 +99,7 @@ const displayMovements = function (movements, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, cur) => acc + cur, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
 };
 
 // Display Summary
@@ -98,13 +108,13 @@ const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter((mov) => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const expenses = acc.movements
     .filter((mov) => mov < 0)
     .reduce((acc, cur) => acc + Math.abs(cur), 0);
 
-  labelSumOut.textContent = `${expenses}€`;
+  labelSumOut.textContent = `${expenses.toFixed(2)}€`;
 
   const interest = acc.movements
     .filter((mov) => mov > 0)
@@ -114,7 +124,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 // Create Usernames
@@ -152,7 +162,7 @@ btnLogin.addEventListener("click", function (event) {
   );
   // console.log(currentAccount);
 
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     // Display a UI and welcome message.
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner
       .split(" ")
@@ -171,7 +181,7 @@ btnLogin.addEventListener("click", function (event) {
 btnTransfer.addEventListener("click", function (e) {
   e.preventDefault();
 
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
   const receiverAcc = accounts.find(
     (acc) => acc.username === inputTransferTo.value
   );
@@ -196,7 +206,7 @@ btnTransfer.addEventListener("click", function (e) {
 btnLoan.addEventListener("click", function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (
     amount > 0 &&
@@ -214,7 +224,7 @@ btnClose.addEventListener("click", function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       (acc) => acc.username === currentAccount.username
@@ -712,3 +722,266 @@ console.log(groupedByActivity);
 // const groupedAccounts = Object.groupBy(accounts, (account) => account.type);
 const groupedAccounts = Object.groupBy(accounts, ({ type }) => type);
 console.log(groupedAccounts);
+
+const arr = [1, 2, 3, 4, 5, 6, 7];
+console.log(new Array(1, 2, 3, 4, 5, 6, 7));
+
+const x = new Array(7);
+console.log(x);
+// x.fill(1);
+x.fill(1, 3, 5);
+console.log(x);
+
+arr.fill(23, 4, 6);
+console.log(arr);
+
+// Array.from
+
+const y = Array.from({ length: 7 }, () => 1);
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, i) => i + 1);
+console.log(z);
+
+const rndDiceRolls = Array.from(
+  { length: 100 },
+  () => Math.floor(Math.random() * 6) + 1
+);
+
+console.log(rndDiceRolls);
+
+const movementsUI = Array.from(document.querySelectorAll(".movements__value"));
+
+console.log(movementsUI);
+
+labelBalance.addEventListener("click", function (e) {
+  e.preventDefault();
+  const movementsUI = Array.from(
+    document.querySelectorAll(".movements__value")
+  );
+  console.log(movementsUI.map((el) => el.textContent.replace("€", "")));
+});
+
+/////////////////////////////////////////////////////
+// Non-destructive alternative: toReversed, toSorted, toSpliced, with
+
+// console.log(movements);
+// const reversedMov = movements.toReversed();
+// console.log(reversedMov);
+// console.log(movements);
+
+//
+
+// const newMovements = movements.with(1, 200);
+// console.log(newMovements);
+
+// 1.
+const bankDepositSum = accounts
+  .map((acc) => acc.movements)
+  .flat()
+  .filter((mov) => mov > 0)
+  .reduce((sum, cur) => sum + cur, 0);
+console.log(bankDepositSum);
+
+// 2.
+// const numDeposits100 = accounts
+//   .flatMap((acc) => acc.movements)
+//   .filter((mov) => mov > 1000).length;
+// console.log(numDeposits100);
+
+// const numDeposits100 = accounts
+//   .flatMap((acc) => acc.movements)
+//   .reduce((count, cur) => (cur >= 1000 ? count + 1 : count), 0);
+// console.log(numDeposits100);
+
+// 3
+
+const { deposits, withdrawals } = accounts
+  .flatMap((acc) => acc.movements)
+  .reduce(
+    (sums, cur) => {
+      // cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
+      sums[cur > 0 ? "deposits" : "withdrawals"] += cur;
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+
+console.log(deposits, withdrawals);
+
+// 4
+
+// this is a nice title -> This Is a Nice Title
+
+const convertTitleCase = function (title) {
+  const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+  const exceptions = ["a", "and", "an", "the", "but", "or", "on", "in", "with"];
+
+  const titleCase = title
+    .toLowerCase()
+    .split(" ")
+    .map((word) => (exceptions.includes(word) ? word : capitalize(word)))
+    .join(" ");
+  return capitalize(titleCase);
+};
+
+console.log(convertTitleCase("this is a nice title"));
+console.log(convertTitleCase("this is a LONG title but not too long"));
+console.log(convertTitleCase("and here is another title with an EXAMPLE"));
+
+///////////////////////////////////////
+// Coding Challenge #4
+
+const dogs = [
+  { weight: 22, curFood: 250, owners: ["Alice", "Bob"] },
+  { weight: 8, curFood: 200, owners: ["Matilda"] },
+  { weight: 13, curFood: 275, owners: ["Sarah", "John"] },
+  { weight: 32, curFood: 340, owners: ["Michael"] },
+];
+
+// Julia and Kate are still studying dogs, and this time they are studying if dogs are eating too much or too little.
+// Eating too much means the dog's current food portion is larger than the recommended portion, and eating too little is the opposite.
+// Eating an okay amount means the dog's current food portion is within a range 10% above and 10% below the recommended portion (see hint).
+
+// 1. Loop over the array containing dog objects, and for each dog, calculate the recommended food portion and add it to the object as a new property.
+// Do NOT create a new array, simply loop over the array. Forumla: recommendedFood = weight ** 0.75 * 28. (The result is in grams of food, and the weight needs to be in kg)
+dogs.forEach((dog) => {
+  dog.recommendedFood = Math.floor(dog.weight ** 0.75 * 28);
+});
+console.log(dogs);
+
+// 2. Find Sarah's dog and log to the console whether it's eating too much or too little. HINT: Some dogs have multiple owners,
+// so you first need to find Sarah in the owners array, and so this one is a bit tricky (on purpose) 🤓
+const dogSarah = dogs.find((dog) => dog.owners.includes("Sarah"));
+
+console.log(
+  `Sarah's dog is eating too ${
+    dogSarah.curFood < dogSarah.recommendedFood ? "little" : "much"
+  }`
+);
+
+// 3. Create an array containing all owners of dogs who eat too much ('ownersEatTooMuch') and an array with all owners of dogs who eat too little ('ownersEatTooLittle').
+const ownersEatTooMuch = dogs
+  .filter((dog) => dog.curFood > dog.recommendedFood)
+  .flatMap((dog) => dog.owners);
+console.log(ownersEatTooMuch);
+
+const ownersEatTooLittle = dogs
+  .filter((dog) => dog.curFood < dog.recommendedFood)
+  .flatMap((dog) => dog.owners);
+console.log(ownersEatTooLittle);
+
+// 4. Log a string to the console for each array created in 3., like this: "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and
+// John and Michael's dogs eat too little!"
+
+console.log(
+  `${ownersEatTooMuch.join(
+    " and "
+  )}'s dogs eat too much and ${ownersEatTooLittle.join(" and ")}`
+);
+
+// 5. Log to the console whether there is any dog eating EXACTLY the amount of food that is recommended (just true or false)
+const exactlyRec = dogs.some((dog) => dog.curFood === dog.recommendedFood);
+console.log(exactlyRec);
+
+// 6. Log to the console whether there is any dog eating an OKAY amount of food (just true or false)
+const okayRec = dogs.some(
+  (dog) =>
+    dog.curFood > dog.recommendedFood * 0.9 &&
+    dog.curFood < dog.recommendedFood * 1.1
+);
+console.log(okayRec);
+
+// 7. Create an array containing the dogs that are eating an OKAY amount of food (try to reuse the condition used in 6.)
+const okayDogs = dogs.filter(
+  (dog) =>
+    dog.curFood > dog.recommendedFood * 0.9 &&
+    dog.curFood < dog.recommendedFood * 1.1
+);
+console.log(okayDogs);
+
+// 8. Create a shallow copy of the dogs array and sort it by recommended food portion in an ascending order
+//  (keep in mind that the portions are inside the array's objects)
+
+const dogsArr = dogs.slice();
+console.log(dogsArr.sort((a, b) => a.recommendedFood - b.recommendedFood));
+
+// HINT 1: Use many different tools to solve these challenges, you can use the summary lecture to choose between them 😉
+// HINT 2: Being within a range 10% above and below the recommended portion means: current > (recommended * 0.90) && current < (recommended * 1.10).
+// Basically, the current portion should be between 90% and 110% of the recommended portion.
+
+// TEST DATA:
+// const dogs = [
+//   { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+//   { weight: 8, curFood: 200, owners: ['Matilda'] },
+//   { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+//   { weight: 32, curFood: 340, owners: ['Michael'] }
+// ];
+
+// GOOD LUCK 😀
+
+////////////////////////////////////////////
+///////////////////////////////////////////
+// LECTURES
+
+// console.log(23 === 23.0);
+// console.log(0.2 + 0.2);
+
+// console.log(typeof +"23");
+
+// // Parsing
+// console.log(Number.parseInt("30px", 10));
+// console.log(Number.parseInt("e30", 10));
+
+// // Reading a value from a string
+// console.log(Number.parseInt(" 2.5rem"));
+// console.log(Number.parseFloat("2.5rem"));
+
+// console.log(!Number.isNaN(20));
+
+// // Checking if value is a number
+// console.log(Number.isFinite(20));
+// console.log(Number.isFinite(20 / 0));
+
+// console.log(Number.isInteger(23));
+// console.log(Number.isInteger(23.0));
+// console.log(Number.isInteger(23 / 0));
+
+// console.log(Math.sqrt(25));
+// console.log(25 ** (1 / 2));
+// console.log(8 ** (1 / 3));
+
+// console.log(Math.max(5, 8, 23, 11, 2));
+// console.log(Math.max(5, 8, "23", 11, 2));
+// console.log(Math.max(5, 8, "23px", 11, 2));
+
+// console.log(Math.min(5, 8, "23", 11, 2));
+
+// console.log(Math.PI * Number.parseFloat("10px") ** 2);
+
+// console.log(Math.trunc(Math.random() * 6) + 1);
+
+// const randomInt = (min, max) =>
+//   Math.floor(Math.random() * (max - min + 1) + min);
+
+// console.log(randomInt(10, 20));
+// console.log(randomInt(0, 3));
+
+// Rounding integers
+
+// console.log(Math.trunc(23.3));
+
+// console.log(Math.round(23.3));
+// console.log(Math.round(23.9));
+
+// console.log(Math.ceil(23.9));
+// console.log(Math.ceil(23.9));
+
+// console.log(Math.floor(23.9));
+// console.log(Math.floor(23.9));
+
+// // Roundig decimals
+
+// console.log(+(2.7).toFixed(0));
+// console.log((2.7).toFixed(3));
+// console.log((2.7).toFixed(0));
