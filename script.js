@@ -75,7 +75,7 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const formatMovementDate = function (date) {
+const formatMovementDate = function (date, locale) {
   const calDaysPassed = (date1, date2) =>
     Math.round(Math.abs(date2 - date1) / (24 * 60 * 60 * 1000));
 
@@ -86,11 +86,20 @@ const formatMovementDate = function (date) {
   if (daysPassed === 1) return "Yesterday";
   if (daysPassed <= 7) return `${daysPassed} days ago`;
 
-  const day = `${date.getDate()}`.padStart(2, 0);
-  const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  const year = date.getFullYear();
+  // const day = `${date.getDate()}`.padStart(2, 0);
+  // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  // const year = date.getFullYear();
 
-  return `${day}/${month}/${year}`;
+  // return `${day}/${month}/${year}`;
+
+  return new Intl.DateTimeFormat(locale).format(date);
+};
+
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
 };
 // Display Movements
 
@@ -113,14 +122,15 @@ const displayMovements = function (acc, sort = false) {
     const type = movement > 0 ? `deposit` : `withdrawal`;
 
     const date = new Date(movementDate);
-    const displayDate = formatMovementDate(date);
+    const displayDate = formatMovementDate(date, acc.locale);
+    const formattedMov = formatCur(movement, acc.locale, acc.currency);
 
     const html = `
       <div class="movements__row">
             <div class="movements__type 
             movements__type--${type}">${i + 1} ${type}</div>
             <div class="movements__date">${displayDate}</div>
-            <div class="movements__value">${movement}€</div>
+            <div class="movements__value">${formattedMov}</div>
       </div>`;
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
@@ -131,7 +141,7 @@ const displayMovements = function (acc, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, cur) => acc + cur, 0);
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
 // Display Summary
@@ -140,13 +150,14 @@ const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter((mov) => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
-  const expenses = acc.movements
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
+
+  const out = acc.movements
     .filter((mov) => mov < 0)
     .reduce((acc, cur) => acc + Math.abs(cur), 0);
 
-  labelSumOut.textContent = `${expenses.toFixed(2)}€`;
+  labelSumOut.textContent = formatCur(Math.abs(out), acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter((mov) => mov > 0)
@@ -156,7 +167,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 // Create Usernames
@@ -186,6 +197,8 @@ const updateUI = function (acc) {
 
 let currentAccount;
 
+// FAKE ALWAYS LOGGED IN
+
 currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
@@ -206,13 +219,30 @@ btnLogin.addEventListener("click", function (event) {
       .at(0)}`;
     containerApp.style.opacity = 100;
 
+    // const now = new Date();
+    // const day = `${now.getDate()}`.padStart(2, 0);
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    // const year = now.getFullYear();
+    // const hour = `${now.getHours()}`.padStart(2, 0);
+    // const min = `${now.getMinutes()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+
+    // Experimenting with API
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    const min = `${now.getMinutes()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    };
+    // const locale = navigator.language;
+    // console.log(locale);
+
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format();
 
     // day/month/year
 
@@ -1138,3 +1168,54 @@ const calDaysPassed = (date1, date2) =>
   Math.abs(date2 - date1) / (24 * 60 * 60 * 1000);
 const days1 = calDaysPassed(new Date(2037, 3, 4), new Date(2037, 3, 14));
 // console.log(days1);
+
+///////////////////////////////////
+////
+// Internationalisation of numbers
+
+// const num = 23234223.233;
+
+// const options = {
+//   style: "unit",
+//   unit: "mile-per-hour",
+// };
+// console.log("US:", new Intl.NumberFormat("en-US", options).format(num));
+// console.log("Germany:", new Intl.NumberFormat("de-DE", options).format(num));
+// console.log("Syria:", new Intl.NumberFormat("ar-SY", options).format(num));
+
+// setTimeout(() => console.log("Here is your pizza"), 3000);
+// console.log("waiting...");
+
+// setTimeout(
+//   (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2}`),
+//   3000,
+//   "olive",
+//   "spinach"
+// );
+// console.log("waiting...");
+
+const ingredients = ["olive", "spinach"];
+const pizzaTimer = setTimeout(
+  (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2}`),
+  3000,
+  ...ingredients
+);
+console.log("waiting...");
+
+if (ingredients.includes("spinach")) clearInterval(pizzaTimer);
+
+// // setInterval()
+// setInterval(function () {
+//   const now = new Date();
+//   console.log(now);
+// }, 1000);
+
+// setInterval(function () {
+//   const now = new Date();
+//   const hour = now.getHours();
+//   const minute = now.getMinutes();
+//   const second = now.getSeconds().toString();
+//   console.log(`${hour}:${minute}:${second.padStart(2, "0")}`);
+// }, 1000);
+
+// console.log("5".padStart(2, "0"));
